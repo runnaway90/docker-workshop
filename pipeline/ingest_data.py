@@ -4,9 +4,20 @@
 import pandas as pd
 from tqdm.auto import tqdm
 from sqlalchemy import create_engine
+import click
 
 
-def run():
+@click.command()
+@click.option('--year', default=2021, type=int, help='Year for the data')
+@click.option('--month', default=1, type=int, help='Month for the data')
+@click.option('--target-table', default='yellow_taxi_data', help='Target table name')
+@click.option('--pg-pass', default='root', help='PostgreSQL password')
+@click.option('--pg-user', default='root', help='PostgreSQL user')
+@click.option('--pg-host', default='localhost', help='PostgreSQL host')
+@click.option('--pg-port', default=5432, type=int, help='PostgreSQL port')
+@click.option('--pg-db', default='ny_taxi', help='PostgreSQL database')
+@click.option('--chunksize', default=100000, type=int, help='Chunk size for reading CSV')
+def run(year, month, target_table, pg_pass, pg_user, pg_host, pg_port, pg_db, chunksize):
 
     dtype = {
         "VendorID": "Int64",
@@ -32,21 +43,7 @@ def run():
         "tpep_dropoff_datetime"
     ]
 
-    year = 2021
-    month = 1 
-
     prefix = 'https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/'
-
-    target_table = "yellow_taxi_data"
-
-    pg_pass = "root"
-    pg_user = "root"
-    pg_host = "localhost"
-    pg_port = 5432
-    pg_db = "ny_taxi"
-
-    chunksize = 100000
-
 
     engine = create_engine(f'postgresql+psycopg://{pg_user}:{pg_pass}@{pg_host}:{pg_port}/{pg_db}')
 

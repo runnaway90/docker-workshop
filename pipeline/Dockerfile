@@ -9,6 +9,11 @@ WORKDIR /code
 # Add virtual environment to PATH so we can use installed packages
 ENV PATH="/code/.venv/bin:$PATH"
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy dependency files first (better layer caching)
 COPY pyproject.toml .python-version uv.lock ./
 
@@ -16,7 +21,7 @@ COPY pyproject.toml .python-version uv.lock ./
 RUN uv sync --locked 
 
 # Copy application code
-COPY pipeline.py . 
+COPY ingest_data.py . 
 
 # Set entry point
-ENTRYPOINT ["python", "pipeline.py"]
+ENTRYPOINT ["python", "ingest_data.py"]
